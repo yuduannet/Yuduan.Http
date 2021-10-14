@@ -1,7 +1,16 @@
 # Yuduan.Http
 a library base on HttpClient. 一个基于HttpClient实现的HTTP请求扩展库
 
+Supports
 
+ * .Net Standard 2.0 or above
+ * .Net Framework 4.5.2 or above
+
+[![NuGet version (Yuduan.Http)](https://img.shields.io/nuget/v/Yuduan.Http.svg?style=flat-square)](https://www.nuget.org/packages/Yuduan.Http/)
+
+Install by [nuget](https://www.nuget.org/packages/Yuduan.Http)
+
+    Install-Package Yuduan.Http
 
 ### 使用示例
 ```csharp
