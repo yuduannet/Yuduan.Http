@@ -14,6 +14,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
+
 
 namespace Yuduan.Http
 {
@@ -177,8 +179,9 @@ namespace Yuduan.Http
                 Cookie cookieTemp = new Cookie
                 {
                     Name = tempStrS[0],
-                    Value = tempStrS[1],
-                    Domain = domain
+                    Value = HttpUtility.UrlEncode(tempStrS[1]),
+                    Domain = domain,
+                    Path = "/"
                 };
                 cookieContainer.Add(cookieTemp);
             }

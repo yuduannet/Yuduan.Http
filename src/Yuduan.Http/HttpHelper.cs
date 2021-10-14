@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Yuduan.Http
 {
@@ -173,46 +172,7 @@ namespace Yuduan.Http
             return await SendAsync(url, HttpMethod.Get, c => c.ReadAsStreamAsync(), headers);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="headers"></param>
-        /// <returns></returns>
-        public async Task<HttpResult<JObject>> GetJsonAsync(string url, IDictionary<string, string> headers = null)
-        {
-            var result = await SendAsync(url, HttpMethod.Get, c => c.ReadAsStringAsync(), headers);
-            var httpResult = new HttpResult<JObject>
-            {
-                Success = result.Success,
-                Headers = result.Headers,
-                Message = result.Message,
-                StatusCode = result.StatusCode
-            };
-            if (result.Success)
-            {
-                httpResult.Response = JObject.Parse(result.Response);
-            }
-            return httpResult;
-        }
-
-        public async Task<HttpResult<T>> GetJsonAsync<T>(string url, IDictionary<string, string> headers = null)
-        {
-            var result = await SendAsync(url, HttpMethod.Get, c => c.ReadAsStringAsync(), headers);
-            var httpResult = new HttpResult<T>
-            {
-                Success = result.Success,
-                Headers = result.Headers,
-                Message = result.Message,
-                StatusCode = result.StatusCode
-            };
-            if (result.Success)
-            {
-                httpResult.Response = JsonConvert.DeserializeObject<T>(result.Response);
-            }
-            return httpResult;
-        }
-
+        
 
         #endregion
 
@@ -252,7 +212,7 @@ namespace Yuduan.Http
         }
 
         /// <summary>
-        /// POST提交JSON
+        /// POST提交JSON对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="url"></param>
@@ -326,75 +286,8 @@ namespace Yuduan.Http
             return await SendAsync<byte[]>(url, HttpMethod.Post, c => c.ReadAsByteArrayAsync(), headers, content);
         }
 
-        /// <summary>
-        /// POST提交，返回JSON对象
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <param name="encoding"></param>
-        /// <param name="mediaType"></param>
-        /// <param name="headers"></param>
-        /// <returns></returns>
-        public async Task<HttpResult<JObject>> PostJsonResultAsync(string url, string data, Encoding encoding = null, string mediaType = null, IDictionary<string, string> headers = null)
-        {
-            var result = await PostTextAsync(url, data, encoding, mediaType, headers);
-            var httpResult = new HttpResult<JObject>
-            {
-                Success = result.Success,
-                Headers = result.Headers,
-                Message = result.Message,
-                StatusCode = result.StatusCode
-            };
-            if (result.Success)
-            {
-                try
-                {
-                    httpResult.Response = JObject.Parse(result.Response);
-                }
-                catch (Exception e)
-                {
-                    return new HttpResult<JObject>(false, $"failed to parse text to JObject:{e.Message}");
-                }
-               
-            }
-            return httpResult;
-        }
+     
 
-        /// <summary>
-        /// POST提交，返回对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <param name="encoding"></param>
-        /// <param name="mediaType"></param>
-        /// <param name="headers"></param>
-        /// <returns></returns>
-        public async Task<HttpResult<T>> PostJsonResultAsync<T>(string url, string data, Encoding encoding = null, string mediaType = null, IDictionary<string, string> headers = null)
-        {
-            var result = await PostTextAsync(url, data, encoding, mediaType, headers);
-            var httpResult = new HttpResult<T>
-            {
-                Success = result.Success,
-                Headers = result.Headers,
-                Message = result.Message,
-                StatusCode = result.StatusCode
-            };
-            if (result.Success)
-            {
-                try
-                {
-                    httpResult.Response = JsonConvert.DeserializeObject<T>(result.Response);
-
-                }
-                catch (Exception e)
-                {
-                    return new HttpResult<T>(false, $"deserialize text to object failed:{e.Message}");
-                }
-                
-            }
-            return httpResult;
-        }
 
 
         public async Task<HttpResult<string>> PostAsync(string url, HttpContent content, IDictionary<string, string> headers = null)
