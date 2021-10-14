@@ -18,13 +18,19 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: |
+        cd src
+        dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: |
+        cd src
+        dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: |
+        cd src
+        dotnet test --no-build --verbosity normal
     - name: Publish
       uses: brandedoutcast/publish-nuget@v2.5.2
       with:
-       PROJECT_FILE_PATH: Yuduan.Http/Yuduan.Http.csproj
+       PROJECT_FILE_PATH: src/Yuduan.Http/Yuduan.Http.csproj
        NUGET_KEY: ${{secrets.NUGETTOKEN}}
