@@ -1,13 +1,17 @@
-﻿using System;
+﻿#if NET452
+using System.Net.Http;
+using System.Web;
+#else
+using System.Net.Http;
+#endif
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Newtonsoft.Json;
 
 namespace Yuduan.Http
@@ -24,6 +28,8 @@ namespace Yuduan.Http
         /// 默认超时时间
         /// </summary>
         public int DefaultTimeOut { get; set; } = 15000;
+
+
         private readonly HttpClientHandler _clientHandler;
 
         /// <summary>
@@ -33,7 +39,8 @@ namespace Yuduan.Http
         /// <param name="proxy">代理</param>
         /// <param name="automaticDecompression">压缩</param>
         /// <param name="cookie"></param>
-        public HttpHelper(bool useCookie = true, IWebProxy proxy = null, bool automaticDecompression = true, CookieContainer cookie = null)
+        /// <param name="userAgent"></param>
+        public HttpHelper(bool useCookie = true, IWebProxy proxy = null, bool automaticDecompression = true, CookieContainer cookie = null, string userAgent = null)
         {
             _clientHandler = new HttpClientHandler
             {
@@ -58,6 +65,10 @@ namespace Yuduan.Http
                 _clientHandler.Proxy = proxy;
                 _clientHandler.UseProxy = true;
             }
+
+            if (!string.IsNullOrEmpty(userAgent))
+                HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", userAgent);
+
         }
 
         public HttpHelper(HttpClientHandler clientHandler)
@@ -73,11 +84,9 @@ namespace Yuduan.Http
         /// <summary>
         /// 添加标头（该实例下的所有http请求都会带上该headers）
         /// </summary>
-        public void AddGlobalHeader(string name, string value, bool unValidate = false)
+        public void AddGlobalHeader(string name, string value)
         {
-            if (unValidate)
-                HttpClient.DefaultRequestHeaders.TryAddWithoutValidation(name, value);
-            HttpClient.DefaultRequestHeaders.Add(name, value);
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation(name, value);
         }
 
         /// <summary>
@@ -133,8 +142,17 @@ namespace Yuduan.Http
             {
                 url = url.TrimEnd('?');
                 var keyValues = model.GetProperties();
-                var value = string.Join("&", keyValues.Select(i => $"{i.Key}={HttpUtility.UrlEncode(i.Value)}"));
-                url = $"{url}?{value}";
+
+                var query = string.Join("&", keyValues.Select(i =>
+                {
+#if NET452
+                    return $"{i.Key}={HttpUtility.UrlEncode(i.Value)}";
+#else
+                    return $"{i.Key}={WebUtility.UrlEncode(i.Value)}";
+#endif
+
+                }));
+                url = $"{url}?{query}";
             }
             catch (Exception e)
             {
@@ -172,7 +190,7 @@ namespace Yuduan.Http
             return await SendAsync(url, HttpMethod.Get, c => c.ReadAsStreamAsync(), headers);
         }
 
-        
+
 
         #endregion
 
@@ -244,8 +262,8 @@ namespace Yuduan.Http
             string data;
             try
             {
-                 data = JsonConvert.SerializeObject(model);
-              
+                data = JsonConvert.SerializeObject(model);
+
             }
             catch (Exception e)
             {
@@ -286,7 +304,7 @@ namespace Yuduan.Http
             return await SendAsync<byte[]>(url, HttpMethod.Post, c => c.ReadAsByteArrayAsync(), headers, content);
         }
 
-     
+
 
 
 
@@ -344,6 +362,6 @@ namespace Yuduan.Http
 
         }
 
-       
+
     }
 }

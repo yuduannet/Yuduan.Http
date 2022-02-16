@@ -1,5 +1,6 @@
 ﻿#if NET452
 using System.Net.Http;
+using System.Web;
 #else
 using System.Net.Http;
 #endif
@@ -14,8 +15,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-
 
 namespace Yuduan.Http
 {
@@ -23,8 +22,6 @@ namespace Yuduan.Http
     public static class HttpExtensions
     {
        
-
-
         public static async Task<HttpResult> GetAsyncEx(this HttpClient client, string url, int timeout = 5000)
         {
             HttpResult result;
@@ -70,8 +67,6 @@ namespace Yuduan.Http
             }
             return result;
         }
-
-
 
         /// <summary>
         /// HTTP请求重试
@@ -179,7 +174,11 @@ namespace Yuduan.Http
                 Cookie cookieTemp = new Cookie
                 {
                     Name = tempStrS[0],
+#if NET452
                     Value = HttpUtility.UrlEncode(tempStrS[1]),
+#else
+                    Value = WebUtility.UrlEncode(tempStrS[1]),
+#endif
                     Domain = domain,
                     Path = "/"
                 };

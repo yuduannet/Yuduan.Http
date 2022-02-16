@@ -1,5 +1,5 @@
 # Yuduan.Http
-a library base on HttpClient. 一个基于HttpClient实现的HTTP请求扩展库
+a library extends HttpClient. 一个基于HttpClient实现的HTTP请求扩展库
 
 Supports
 
@@ -12,7 +12,40 @@ Install by [nuget](https://www.nuget.org/packages/Yuduan.Http)
 
     Install-Package Yuduan.Http
 
-### 使用示例
+### 简单入门
+```csharp
+     using (HttpHelper http = new HttpHelper())
+     {
+         //send GET request
+         var httpResult = await http.GetStringAsync("https://www.xxx.com");
+         if (httpResult.Success)
+         {
+             Console.WriteLine(httpResult.Response);
+         }
+         else
+         {
+             Console.WriteLine(httpResult.Message);
+         }
+
+         //send form POST request
+         httpResult = await http.PostFormDataAsync("https://www.xxx.com", new
+         {
+             a = '1',
+             b = '2',
+             c = '3'
+         });
+         if (httpResult.Success)
+         {
+             Console.WriteLine(httpResult.Response);
+         }
+         else
+         {
+             Console.WriteLine(httpResult.Message);
+         }
+     }
+```
+
+### 完整示例
 ```csharp
    //从CookieContainer
    var cookies = new CookieContainer();
