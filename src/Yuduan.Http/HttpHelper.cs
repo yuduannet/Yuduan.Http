@@ -304,10 +304,6 @@ namespace Yuduan.Http
             return await SendAsync<byte[]>(url, HttpMethod.Post, c => c.ReadAsByteArrayAsync(), headers, content);
         }
 
-
-
-
-
         public async Task<HttpResult<string>> PostAsync(string url, HttpContent content, IDictionary<string, string> headers = null)
         {
             return await SendAsync(url, HttpMethod.Post, c => c.ReadAsStringAsync(), headers, content);
@@ -361,7 +357,6 @@ namespace Yuduan.Http
             }
 
         }
-
 
     }
 }
